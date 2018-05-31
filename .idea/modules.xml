@@ -5,6 +5,8 @@
       <module fileurl="file://$PROJECT_DIR$/DnRxJava.iml" filepath="$PROJECT_DIR$/DnRxJava.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
       <module fileurl="file://$PROJECT_DIR$/dnrxlibrary/dnrxlibrary.iml" filepath="$PROJECT_DIR$/dnrxlibrary/dnrxlibrary.iml" />
+      <module fileurl="file://$PROJECT_DIR$/rx/rx.iml" filepath="$PROJECT_DIR$/rx/rx.iml" />
+      <module fileurl="file://$PROJECT_DIR$/rx_test/rx_test.iml" filepath="$PROJECT_DIR$/rx_test/rx_test.iml" />
     </modules>
   </component>
 </project>

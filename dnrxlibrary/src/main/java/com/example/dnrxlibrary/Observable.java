@@ -1,5 +1,7 @@
 package com.example.dnrxlibrary;
 
+import android.util.Log;
+
 /**
  * @author : Administrator
  * @time : 8:41
@@ -24,13 +26,26 @@ public class Observable<T> {
     }
     //</editor-fold>
 
+    //<editor-fold desc="订阅">
     /**
+     * 订阅
      * @param observer 观察者
      */
-    //<editor-fold desc="订阅">
     public void subscribe(Observer<? super T> observer){
+        Log.e("RXJava"," 订阅观察者");
         observableOnSubscribe.onSubscribe(observer);
     }
     //</editor-fold>
+
+    /**
+     * 转换符 map
+     * 将事件T 转换成事件 R
+     * 创建一个被观察者,返回
+     *
+     * 要持有其上一个被观察者 和 function
+     */
+    public <R> Observable<R> map(Function<? super T,? extends R> function){
+        return new Observable(new OnSubscribeLift(observableOnSubscribe,function));
+    }
 
 }

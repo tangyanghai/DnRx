@@ -1,1 +1,1 @@
-include ':app', ':dnrxlibrary'
+include ':app', ':dnrxlibrary', ':rx_test', ':rx'
