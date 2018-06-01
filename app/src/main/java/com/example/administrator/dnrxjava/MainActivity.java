@@ -30,13 +30,16 @@ public class MainActivity extends AppCompatActivity {
                 .map(new Function<Fruit, String>() {
                     @Override
                     public String apply(Fruit fruit) {
+                        Log.e("RXJava","转换符事件的线程-->"+Thread.currentThread().getName());
                         Log.e("RXJava","事件转换");
                         return new String(fruit.name);
                     }
                 })
+                .threadNew()
                 .subscribe(new Observer<String>() {
                     @Override
                     public void onNext(String s) {
+                        Log.e("RXJava","观察者的线程-->"+Thread.currentThread().getName());
                         Log.e("RXJava","终极观察者 的onNext被调用");
                         Log.e(TAG, s);
                     }

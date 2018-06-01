@@ -2,6 +2,9 @@ package com.example.dnrxlibrary;
 
 import android.util.Log;
 
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+
 /**
  * @author : Administrator
  * @time : 8:41
@@ -9,6 +12,9 @@ import android.util.Log;
  * 发送时间
  */
 public class Observable<T> {
+    /**
+     * 发射器-->将事件传递给观察者
+     */
     ObservableOnSubscribe<T> observableOnSubscribe;
 
     /**
@@ -47,5 +53,15 @@ public class Observable<T> {
     public <R> Observable<R> map(Function<? super T,? extends R> function){
         return new Observable(new OnSubscribeLift(observableOnSubscribe,function));
     }
+
+
+    /**
+     * 新线程中调用
+     */
+    public Observable<T> threadNew(){
+
+        return create(new OnSubscribeNewThread(this));
+    }
+
 
 }

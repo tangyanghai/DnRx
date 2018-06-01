@@ -1,58 +1,86 @@
 package com.example.rx;
 
-import android.support.v4.app.FragmentActivity;
-import android.support.v7.app.AppCompatActivity;
+import android.annotation.SuppressLint;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.widget.Button;
 
-import com.example.rx.rx.Function;
-import com.example.rx.rx.Observable;
-import com.example.rx.rx.Observer;
-import com.example.rx.rx.Subscribe;
+import com.jakewharton.rxbinding2.view.RxView;
+import com.jakewharton.rxbinding2.widget.RxTextView;
 
-import java.security.PublicKey;
+import java.util.concurrent.TimeUnit;
 
+import io.reactivex.ObservableSource;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.functions.Consumer;
+import io.reactivex.functions.Function;
+import io.reactivex.functions.Predicate;
+import io.reactivex.schedulers.Schedulers;
+
+/**
+ * Rxjava使用验证
+ */
 public class MainActivity extends AppCompatActivity {
 
+    private final String TAG = "MainActivity";
+    Button btn;
+    private final int SECOND = 10;
 
+    @SuppressLint("CheckResult")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        Observable
-                .create(new Subscribe<String>() {
+        btn = findViewById(R.id.btn);
+
+        RxView
+                .clicks(btn)
+                .doOnNext(new Consumer<Object>() {
                     @Override
-                    public void onSubscribe(Observer<? super String> observer) {
-                        MyLog.log("原始的发射器--发出事件");
-                        observer.onNext("-->");
+                    public void accept(Object o) throws Exception {
+                        //点击之后  设置时间  设置为不可点击
+                        RxView.enabled(btn).accept(false);
+                        RxTextView.text(btn).accept("" + SECOND);
                     }
                 })
-                .map(new Function<String, Object>() {
+                .observeOn(Schedulers.newThread())
+                .flatMap(new Function<Object, ObservableSource<Long>>() {
                     @Override
-                    public Object apply(String s) {
-                        MyLog.log("map转换器--事件转换1");
-                        return null;
+                    public ObservableSource<Long> apply(Object o) throws Exception {
+                        //开启倒计时
+                        //1秒一次 一共60次  返回次数
+                        return io.reactivex.Observable.interval(1, TimeUnit.SECONDS, Schedulers.io())
+                                .take(SECOND);
                     }
                 })
-                .map(new Function<Object, Object>() {
+                .observeOn(AndroidSchedulers.mainThread())
+                .map(new Function<Long, Long>() {
                     @Override
-                    public Object apply(Object s) {
-                        MyLog.log("map转换器--事件转换2");
-                        return null;
+                    public Long apply(Long aLong) throws Exception {
+                        //每次倒计时都改变按钮上的数字
+                        Long remain = SECOND - aLong - 1;
+                        RxTextView.text(btn).accept(remain.toString());
+                        return remain;
                     }
                 })
-                .map(new Function<Object, Object>() {
+                .filter(new Predicate<Long>() {
                     @Override
-                    public Object apply(Object s) {
-                        MyLog.log("map转换器--事件转换3");
-                        return null;
+                    public boolean test(Long aLong) throws Exception {
+                        //过滤掉不是0的数字
+                        return aLong == 0;
                     }
                 })
-                .subscribe(new Observer<Object>() {
+                //订阅
+                .subscribe(new Consumer<Long>() {
                     @Override
-                    public void onNext(Object s) {
-                        MyLog.log("观察者--事件结束" + s);
+                    public void accept(Long aLong) throws Exception {
+                        //数字是0了,恢复点击
+                        RxView.enabled(btn).accept(true);
+                        RxTextView.text(btn).accept("获取验证码");
                     }
-                });
+                })
+        ;
+
     }
 }
